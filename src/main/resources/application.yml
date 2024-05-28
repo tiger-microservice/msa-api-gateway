@@ -1,7 +1,13 @@
 app:
   api-prefix: /api
-
+  auth-service:
+    url: http://localhost:8081
 spring:
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
   application:
     name: api-gateway
   cloud:
@@ -12,12 +18,18 @@ spring:
         wiretap: true
       routes:
         - id: sso_service
-          uri: http://localhost:8081
+          uri: ${app.auth-service.url}
           predicates:
           - Path=${app.api-prefix}/oauth/**
           filters:
           # 2 for prefix path /api
           - StripPrefix=1
+          - name: RequestRateLimiter
+            args:
+              redis-rate-limiter.replenishRate: 500
+              redis-rate-limiter.burstCapacity: 1000
+              redis-rate-limiter.requestedTokens: 1
+              key-resolver: "#{@ipKeyResolver}"
         - id: customer_service
           uri: http://localhost:8082/customer
           predicates:
@@ -48,6 +60,7 @@ spring:
           filters:
           # 2 for prefix path /api
           - StripPrefix=1
+
 logging:
   level:
     reactor:

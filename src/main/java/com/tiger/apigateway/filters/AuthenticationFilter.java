@@ -98,7 +98,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     if (introspectResponse.getData().isValid()) return chain.filter(newExchange);
                     else return unauthenticated(exchange.getResponse());
                 })
-                .onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
+                .onErrorResume(throwable -> {
+                    log.error(throwable.getMessage(), throwable);
+                    return unauthenticated(exchange.getResponse());
+                });
     }
 
     @Override
