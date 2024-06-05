@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.tiger.apigateway.utils.IpAddressUtil;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -46,7 +47,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String apiPrefix;
 
     @NonFinal
-    private String[] publicEndpoints = {".*/auth/login", ".*/auth/sign-up"};
+    private String[] publicEndpoints = {".*/auth/login", ".*/auth/register", ".*/auth/sign-up", ".*/notification-adapter/*"};
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -55,24 +56,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ServerWebExchange newExchange;
         if (CollectionUtils.isEmpty(requestIds)) {
             // add request id
-            // Tạo HttpHeaders mới và copy các header cũ từ request
-            HttpHeaders headers = new HttpHeaders();
-            headers.addAll(exchange.getRequest().getHeaders());
-
-            // Thêm hoặc thay đổi header
-            String requestIdGateway = UUID.randomUUID().toString();
-            headers.add(AppConstants.APP_REQUEST_ID, requestIdGateway);
-
-            // push request id to log
-            MDC.put(AppConstants.APP_REQUEST_ID, requestIdGateway);
-
-            // Tạo request mới với các header mới
-            ServerHttpRequest newRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
-                @Override
-                public HttpHeaders getHeaders() {
-                    return headers;
-                }
-            };
+            ServerHttpRequest newRequest = addRequestIdIntoRequestHeader(exchange);
 
             // Tạo exchange mới với request đã thay đổi
             newExchange = exchange.mutate().request(newRequest).build();
@@ -100,13 +84,54 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 })
                 .onErrorResume(throwable -> {
                     log.error(throwable.getMessage(), throwable);
-                    return unauthenticated(exchange.getResponse());
+                    return otherError(exchange.getResponse(), throwable);
                 });
+    }
+
+    private static ServerHttpRequest addRequestIdIntoRequestHeader(ServerWebExchange exchange) {
+        // Tạo HttpHeaders mới và copy các header cũ từ request
+        HttpHeaders headers = new HttpHeaders();
+        headers.addAll(exchange.getRequest().getHeaders());
+
+        // Thêm hoặc thay đổi header
+        String requestIdGateway = UUID.randomUUID().toString();
+        log.info("[requestIdGateway] {}", requestIdGateway);
+        headers.add(AppConstants.APP_REQUEST_ID, requestIdGateway);
+
+        // extract ipAddress
+        String ipAddress = IpAddressUtil.getIpAddress(exchange);
+        log.info("[ipAddress] {}", ipAddress);
+        headers.add(AppConstants.APP_REQUEST_ADDRESS, ipAddress);
+
+        // push request id to log
+        MDC.put(AppConstants.APP_REQUEST_ID, requestIdGateway);
+
+        // Tạo request mới với các header mới
+        ServerHttpRequest newRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+            @Override
+            public HttpHeaders getHeaders() {
+                return headers;
+            }
+        };
+        return newRequest;
     }
 
     @Override
     public int getOrder() {
         return -1;
+    }
+
+    Mono<Void> otherError(ServerHttpResponse response, Throwable throwable) {
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .build();
+
+        String body = ObjectMapperUtil.castToString(apiResponse);
+        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response) {

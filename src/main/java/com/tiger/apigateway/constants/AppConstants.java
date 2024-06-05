@@ -6,5 +6,7 @@ public final class AppConstants {
 
     public static final String APP_REQUEST_ID = "App-Request-Id";
 
+    public static final String APP_REQUEST_ADDRESS = "app-request-address";
+
     public static final String MDC_CORRELATION_ID = "x-correlation-id";
 }

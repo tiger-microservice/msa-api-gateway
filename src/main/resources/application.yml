@@ -60,6 +60,20 @@ spring:
           filters:
           # 2 for prefix path /api
           - StripPrefix=1
+        - id: notification_adapter
+          uri: http://localhost:8084/notification-adapter
+          predicates:
+            - Path=${app.api-prefix}/notification-adapter/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
+        - id: notification_service
+          uri: http://localhost:8085/notification-service
+          predicates:
+            - Path=${app.api-prefix}/notification-service/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
 
 logging:
   level:
