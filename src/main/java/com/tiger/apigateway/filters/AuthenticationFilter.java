@@ -47,7 +47,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String apiPrefix;
 
     @NonFinal
-    private String[] publicEndpoints = {".*/auth/login", ".*/auth/register", ".*/auth/sign-up", ".*/notification-adapter/*"};
+    private String[] publicEndpoints = {
+            ".*/auth/login",
+            ".*/auth/register",
+            ".*/auth/verify-mfa-login",
+            ".*/auth/verify-register",
+            ".*/auth/sign-up",
+            ".*/notification-adapter/*"
+    };
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
