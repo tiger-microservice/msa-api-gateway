@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import com.tiger.apigateway.utils.IpAddressUtil;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tiger.apigateway.constants.AppConstants;
 import com.tiger.apigateway.dtos.response.ApiResponse;
 import com.tiger.apigateway.services.IdentityService;
+import com.tiger.apigateway.utils.IpAddressUtil;
 import com.tiger.apigateway.utils.ObjectMapperUtil;
 
 import lombok.AccessLevel;
@@ -48,18 +48,26 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonFinal
     private String[] publicEndpoints = {
-            ".*/auth/login",
-            ".*/auth/register",
-            ".*/auth/verify-mfa-login",
-            ".*/auth/verify-register",
-            ".*/auth/sign-up",
-            ".*/notification-adapter/*"
+        ".*/auth/login",
+        ".*/auth/logout",
+        ".*/auth/refresh-token",
+        ".*/auth/request-new-token",
+        ".*/auth/register",
+        ".*/auth/verify-mfa-login",
+        ".*/auth/verify-register",
+        ".*/auth/sign-up",
+        ".*/account/reset-password",
+        ".*/account/confirm-reset-password",
+        ".*/account/confirm-mfa-change-password",
+        ".*/notification-adapter/*"
     };
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("Enter authentication filter....");
-        List<String> requestIds = exchange.getRequest().getHeaders().get(AppConstants.APP_REQUEST_ID);
+        ServerHttpRequest request = exchange.getRequest();
+
+        List<String> requestIds = request.getHeaders().get(AppConstants.APP_REQUEST_ID);
         ServerWebExchange newExchange;
         if (CollectionUtils.isEmpty(requestIds)) {
             // add request id
@@ -71,20 +79,22 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             newExchange = exchange;
         }
 
-        if (isPublicEndpoint(exchange.getRequest())) {
+        if (isPublicEndpoint(request)) {
             return chain.filter(newExchange);
         }
 
         // Get token from authorization header
-        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
+        List<String> authHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
 
         if (CollectionUtils.isEmpty(authHeader)) return unauthenticated(exchange.getResponse());
 
         String token = authHeader.getFirst().replace(AppConstants.KEY_BEARER, "");
-        log.info("Token: {}", token.length());
+        String url = request.getPath().value();
+        String method = request.getMethod().name();
+        log.info("Token length {} url {} method {}", token.length(), url, method);
 
         return identityService
-                .introspect(token)
+                .introspect(token, url, method)
                 .flatMap(introspectResponse -> {
                     if (introspectResponse.getData().isValid()) return chain.filter(newExchange);
                     else return unauthenticated(exchange.getResponse());

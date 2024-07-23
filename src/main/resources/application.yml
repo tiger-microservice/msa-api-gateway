@@ -74,6 +74,13 @@ spring:
           filters:
             # 2 for prefix path /api
             - StripPrefix=1
+        - id: document_service
+          uri: http://localhost:8094/document-service
+          predicates:
+            - Path=${app.api-prefix}/document-service/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
 
 logging:
   level:

@@ -11,6 +11,6 @@ import com.tiger.apigateway.dtos.response.IntrospectResponse;
 import reactor.core.publisher.Mono;
 
 public interface IdentityClient {
-    @PostExchange(url = "/v1/auth/introspect", contentType = MediaType.APPLICATION_JSON_VALUE)
+    @PostExchange(url = "/internal/v1/auth/introspect", contentType = MediaType.APPLICATION_JSON_VALUE)
     Mono<ApiResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request);
 }
