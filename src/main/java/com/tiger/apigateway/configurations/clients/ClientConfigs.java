@@ -22,7 +22,6 @@ public class ClientConfigs {
 
     @Bean
     WebClient webClient() {
-        System.out.println(urlAuthService);
         return WebClient.builder()
                 .baseUrl(urlAuthService + "/oauth")
                 .defaultStatusHandler(

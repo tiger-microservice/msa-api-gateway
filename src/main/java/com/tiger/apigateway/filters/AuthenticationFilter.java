@@ -39,8 +39,8 @@ import reactor.core.publisher.Mono;
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
-    IdentityService identityService;
-    ObjectMapper objectMapper;
+    final IdentityService identityService;
+    final ObjectMapper objectMapper;
 
     @Value("${app.api-prefix}")
     @NonFinal
