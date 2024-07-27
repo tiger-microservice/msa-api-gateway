@@ -23,6 +23,8 @@ public class AppConfig {
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.setAllowedOrigins(List.of("*"));
+        // exposed header for read
+        corsConfiguration.setExposedHeaders(List.of("Content-Disposition", "App-Request-Id"));
         corsConfiguration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
