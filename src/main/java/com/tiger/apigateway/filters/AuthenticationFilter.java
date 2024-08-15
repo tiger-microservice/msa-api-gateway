@@ -56,6 +56,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ".*/auth/verify-mfa-login",
         ".*/auth/verify-register",
         ".*/auth/sign-up",
+        ".*/e/g",
         ".*/account/reset-password",
         ".*/account/confirm-reset-password",
         ".*/account/confirm-mfa-change-password",
@@ -124,13 +125,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         MDC.put(AppConstants.APP_REQUEST_ID, requestIdGateway);
 
         // Tạo request mới với các header mới
-        ServerHttpRequest newRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+        return new ServerHttpRequestDecorator(exchange.getRequest()) {
             @Override
             public HttpHeaders getHeaders() {
                 return headers;
             }
         };
-        return newRequest;
     }
 
     @Override

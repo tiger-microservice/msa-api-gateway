@@ -13,15 +13,15 @@ public class ApiResponse<T> {
     private T data;
     private String message;
 
-    public static <T> ApiResponse responseOK(T data) {
-        return ApiResponse.builder().status(HttpStatus.OK.value()).data(data).build();
+    public static <T> ApiResponse<T> responseOK(T data) {
+        return ApiResponse.<T>builder().status(HttpStatus.OK.value()).data(data).build();
     }
 
-    public static <T> ApiResponse responseOK() {
-        return ApiResponse.builder().status(HttpStatus.OK.value()).build();
+    public static <T> ApiResponse<T> responseOK() {
+        return ApiResponse.<T>builder().status(HttpStatus.OK.value()).build();
     }
 
-    public static <T> ApiResponse responseError(int code, String message) {
-        return ApiResponse.builder().status(code).message(message).build();
+    public static <T> ApiResponse<T> responseError(int code, String message) {
+        return ApiResponse.<T>builder().status(code).message(message).build();
     }
 }

@@ -2,6 +2,7 @@ package com.tiger.apigateway.configurations;
 
 import java.util.List;
 
+import com.tiger.apigateway.constants.AppConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -23,8 +24,11 @@ public class AppConfig {
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.setAllowedOrigins(List.of("*"));
+
         // exposed header for read
-        corsConfiguration.setExposedHeaders(List.of("Content-Disposition", "App-Request-Id"));
+        corsConfiguration.setExposedHeaders(List.of(
+                AppConstants.APP_CONTENT_DISPOSITION,
+                AppConstants.APP_REQUEST_ID));
         corsConfiguration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
