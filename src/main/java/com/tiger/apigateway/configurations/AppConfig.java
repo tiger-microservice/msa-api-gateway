@@ -2,7 +2,6 @@ package com.tiger.apigateway.configurations;
 
 import java.util.List;
 
-import com.tiger.apigateway.constants.AppConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -11,6 +10,7 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tiger.apigateway.constants.AppConstants;
 import com.tiger.apigateway.utils.ObjectMapperUtil;
 
 @Configuration
@@ -26,9 +26,7 @@ public class AppConfig {
         corsConfiguration.setAllowedOrigins(List.of("*"));
 
         // exposed header for read
-        corsConfiguration.setExposedHeaders(List.of(
-                AppConstants.APP_CONTENT_DISPOSITION,
-                AppConstants.APP_REQUEST_ID));
+        corsConfiguration.setExposedHeaders(List.of(AppConstants.APP_CONTENT_DISPOSITION, AppConstants.APP_REQUEST_ID));
         corsConfiguration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();

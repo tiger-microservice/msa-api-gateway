@@ -56,7 +56,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ".*/auth/verify-mfa-login",
         ".*/auth/verify-register",
         ".*/auth/sign-up",
-        ".*/e/g",
+        ".*/s/g",
         ".*/account/reset-password",
         ".*/account/confirm-reset-password",
         ".*/account/confirm-mfa-change-password",
