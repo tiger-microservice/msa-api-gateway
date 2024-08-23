@@ -55,12 +55,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ".*/auth/register",
         ".*/auth/verify-mfa-login",
         ".*/auth/verify-register",
-        ".*/auth/sign-up",
         ".*/s/g",
         ".*/account/reset-password",
         ".*/account/confirm-reset-password",
-        ".*/account/confirm-mfa-change-password",
-        ".*/notification-adapter/*"
+        ".*/account/confirm-mfa-change-password"
     };
 
     @Override
