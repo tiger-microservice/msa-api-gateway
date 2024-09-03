@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.tiger.apigateway.configurations.AuthFilterProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tiger.apigateway.constants.AppConstants;
 import com.tiger.apigateway.dtos.response.ApiResponse;
 import com.tiger.apigateway.services.IdentityService;
@@ -40,26 +40,11 @@ import reactor.core.publisher.Mono;
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     final IdentityService identityService;
-    final ObjectMapper objectMapper;
+    final AuthFilterProperties authFilterProperties;
 
     @Value("${app.api-prefix}")
     @NonFinal
     private String apiPrefix;
-
-    @NonFinal
-    private String[] publicEndpoints = {
-        ".*/auth/login",
-        ".*/auth/logout",
-        ".*/auth/refresh-token",
-        ".*/auth/request-new-token",
-        ".*/auth/register",
-        ".*/auth/verify-mfa-login",
-        ".*/auth/verify-register",
-        ".*/s/g",
-        ".*/account/reset-password",
-        ".*/account/confirm-reset-password",
-        ".*/account/confirm-mfa-change-password"
-    };
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -163,7 +148,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
-        return Arrays.stream(publicEndpoints)
+        return Arrays.stream(this.authFilterProperties.getPublicEndpoints())
                 .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
     }
 }
