@@ -11,6 +11,8 @@ app:
       - .*/auth/verify-register
       - .*/auth/passkey/login/start
       - .*/auth/passkey/login/finish
+      - .*/auth/ott/login/start
+      - .*/auth/ott/login/finish
       - .*/s/g
       - .*/account/reset-password
       - .*/account/confirm-reset-password
