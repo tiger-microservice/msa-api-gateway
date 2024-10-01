@@ -36,7 +36,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     final IdentityService identityService;

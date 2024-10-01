@@ -78,6 +78,34 @@ spring:
           filters:
             # 2 for prefix path /api
             - StripPrefix=1
+        - id: order_service
+          uri: http://localhost:8095/order
+          predicates:
+            - Path=${app.api-prefix}/order/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
+        - id: product_service
+          uri: http://localhost:8096/product
+          predicates:
+            - Path=${app.api-prefix}/product/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
+        - id: shipment_service
+          uri: http://localhost:8097/shipment
+          predicates:
+            - Path=${app.api-prefix}/shipment/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
+        - id: payment_service
+          uri: http://localhost:8098/payment
+          predicates:
+            - Path=${app.api-prefix}/payment/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
 
 logging:
   level:

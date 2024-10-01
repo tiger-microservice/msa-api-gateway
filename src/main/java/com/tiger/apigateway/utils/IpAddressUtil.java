@@ -7,7 +7,7 @@ import org.springframework.web.server.ServerWebExchange;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IpAddressUtil {
 
     public static String getIpAddress(ServerWebExchange exchange) {
