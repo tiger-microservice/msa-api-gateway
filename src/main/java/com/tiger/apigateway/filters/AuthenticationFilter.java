@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import com.tiger.apigateway.configurations.AuthFilterProperties;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 
+import com.tiger.apigateway.configurations.AuthFilterProperties;
 import com.tiger.apigateway.constants.AppConstants;
 import com.tiger.apigateway.dtos.response.ApiResponse;
 import com.tiger.apigateway.services.IdentityService;
