@@ -1,9 +1,8 @@
 package com.tiger.apigateway.dtos.response;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 @Data
 @Builder

@@ -1,5 +1,8 @@
 package com.tiger.apigateway.configurations.clients;
 
+import com.tiger.apigateway.clients.IdentityClient;
+import com.tiger.apigateway.exceptions.AuthLogicException;
+import com.tiger.apigateway.exceptions.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,11 +10,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-
-import com.tiger.apigateway.clients.IdentityClient;
-import com.tiger.apigateway.exceptions.AuthLogicException;
-import com.tiger.apigateway.exceptions.ErrorCode;
-
 import reactor.core.publisher.Mono;
 
 @Configuration
