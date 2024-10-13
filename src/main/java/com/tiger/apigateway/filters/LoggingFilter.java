@@ -1,5 +1,11 @@
 package com.tiger.apigateway.filters;
 
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.*;
+
+import java.net.URI;
+import java.util.Collections;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -7,13 +13,8 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+
 import reactor.core.publisher.Mono;
-
-import java.net.URI;
-import java.util.Collections;
-import java.util.Set;
-
-import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.*;
 
 @Component
 public class LoggingFilter implements GlobalFilter {

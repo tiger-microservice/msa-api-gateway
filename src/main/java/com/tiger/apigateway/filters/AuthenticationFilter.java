@@ -1,16 +1,9 @@
 package com.tiger.apigateway.filters;
 
-import com.tiger.apigateway.configurations.AuthFilterProperties;
-import com.tiger.apigateway.constants.AppConstants;
-import com.tiger.apigateway.dtos.response.ApiResponse;
-import com.tiger.apigateway.services.IdentityService;
-import com.tiger.apigateway.utils.IpAddressUtil;
-import com.tiger.apigateway.utils.ObjectMapperUtil;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -25,11 +18,20 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import com.tiger.apigateway.configurations.AuthFilterProperties;
+import com.tiger.apigateway.constants.AppConstants;
+import com.tiger.apigateway.dtos.response.ApiResponse;
+import com.tiger.apigateway.services.IdentityService;
+import com.tiger.apigateway.utils.IpAddressUtil;
+import com.tiger.apigateway.utils.ObjectMapperUtil;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component

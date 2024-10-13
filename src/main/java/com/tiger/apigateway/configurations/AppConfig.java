@@ -1,8 +1,7 @@
 package com.tiger.apigateway.configurations;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tiger.apigateway.constants.AppConstants;
-import com.tiger.apigateway.utils.ObjectMapperUtil;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -10,7 +9,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tiger.apigateway.constants.AppConstants;
+import com.tiger.apigateway.utils.ObjectMapperUtil;
 
 @Configuration
 public class AppConfig {
