@@ -1,9 +1,15 @@
 package com.tiger.apigateway.filters;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
+import com.tiger.apigateway.constants.AppConstants;
+import com.tiger.apigateway.dtos.response.ApiResponse;
+import com.tiger.apigateway.services.IdentityService;
+import com.tiger.apigateway.utils.IpAddressUtil;
+import com.tiger.apigateway.utils.ObjectMapperUtil;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -18,29 +24,18 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
-
-import com.tiger.apigateway.configurations.AuthFilterProperties;
-import com.tiger.apigateway.constants.AppConstants;
-import com.tiger.apigateway.dtos.response.ApiResponse;
-import com.tiger.apigateway.services.IdentityService;
-import com.tiger.apigateway.utils.IpAddressUtil;
-import com.tiger.apigateway.utils.ObjectMapperUtil;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationFilter implements GlobalFilter, Ordered {
+public class MaintenanceFilter implements GlobalFilter, Ordered {
 
     final IdentityService identityService;
-    final AuthFilterProperties authFilterProperties;
 
     @Value("${app.api-prefix}")
     @NonFinal
@@ -48,7 +43,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("Enter authentication filter....");
+        log.info("Enter maintenance filter....");
         ServerHttpRequest request = exchange.getRequest();
 
         List<String> requestIds = request.getHeaders().get(AppConstants.APP_REQUEST_ID);
@@ -63,24 +58,26 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             newExchange = exchange;
         }
 
-        if (isPublicEndpoint(request)) {
+        // allow api get maintenance
+        if (isMaintenanceEndpoint(request)) {
             return chain.filter(newExchange);
         }
 
+        List<String> clientSites = request.getHeaders().get(AppConstants.APP_CLIENT_SITE);
+        if (CollectionUtils.isEmpty(clientSites)) {
+            return chain.filter(newExchange);
+        }
+
+        String appCode = clientSites.get(0);
         // Get token from authorization header
-        List<String> authHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
-
-        if (CollectionUtils.isEmpty(authHeader)) return unauthenticated(exchange.getResponse());
-
-        String token = authHeader.getFirst().replace(AppConstants.KEY_BEARER, "");
-        String url = request.getPath().value();
-        String method = request.getMethod().name();
-        log.info("Token length {} url {} method {}", token.length(), url, method);
-
         return identityService
-                .introspect(token, url, method)
+                .getMaintenanceStatus(appCode)
                 .flatMap(introspectResponse -> {
-                    if (introspectResponse.getData().isValid()) return chain.filter(newExchange);
+                    var data = introspectResponse.getData();
+                    log.info("data: {}", data.getIsActive().toString());
+                    // OFF maintenance
+                    if (Boolean.FALSE.equals(introspectResponse.getData().getIsActive())) return chain.filter(newExchange);
+                    // ON maintenance
                     else return unauthenticated(exchange.getResponse());
                 })
                 .onErrorResume(throwable -> {
@@ -123,7 +120,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 0;
+        return -1;
     }
 
     Mono<Void> otherError(ServerHttpResponse response, Throwable throwable) {
@@ -141,19 +138,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .message("Hệ thống đang bảo trì. Vui lòng quay lại sau.")
                 .build();
 
         String body = ObjectMapperUtil.castToString(apiResponse);
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
+        response.setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 
-    private boolean isPublicEndpoint(ServerHttpRequest request) {
-        return Arrays.stream(this.authFilterProperties.getPublicEndpoints())
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+    private boolean isMaintenanceEndpoint(ServerHttpRequest request) {
+        return request.getURI().getPath().matches(apiPrefix + "/internal/v1/maintenance");
     }
 }

@@ -1,5 +1,6 @@
 package com.tiger.apigateway.services;
 
+import com.tiger.apigateway.dtos.response.MaintenanceDto;
 import org.springframework.stereotype.Service;
 
 import com.tiger.apigateway.clients.IdentityClient;
@@ -28,6 +29,15 @@ public class IdentityService {
                     .url(url)
                     .method(method)
                     .build());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public Mono<ApiResponse<MaintenanceDto>> getMaintenanceStatus(String appCode) {
+        try {
+            return identityClient.getMaintenanceStatus(appCode);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw e;

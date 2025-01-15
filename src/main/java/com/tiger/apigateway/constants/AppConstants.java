@@ -13,4 +13,7 @@ public final class AppConstants {
     public static final String APP_TIME_ZONE = "app-time-zone";
 
     public static final String APP_CONTENT_DISPOSITION = "Content-Disposition";
+
+    public static final String APP_CLIENT_SITE = "app-client-site";
+
 }

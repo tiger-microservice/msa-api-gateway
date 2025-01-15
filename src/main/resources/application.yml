@@ -17,6 +17,7 @@ app:
       - .*/account/reset-password
       - .*/account/confirm-reset-password
       - .*/account/confirm-mfa-change-password
+      - .*/auth/login
 
   auth-service:
     url: http://localhost:8081
