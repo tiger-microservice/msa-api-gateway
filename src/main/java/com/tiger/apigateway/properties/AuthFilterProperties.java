@@ -1,4 +1,4 @@
-package com.tiger.apigateway.configurations;
+package com.tiger.apigateway.properties;
 
 import jakarta.annotation.PostConstruct;
 

@@ -22,6 +22,8 @@ app:
   auth-service:
     url: http://localhost:8081
 spring:
+  banner:
+    location: tiger-banner.txt
   data:
     redis:
       database: 0
@@ -104,6 +106,13 @@ spring:
           uri: http://localhost:8098/payment
           predicates:
             - Path=${app.api-prefix}/payment/**
+          filters:
+            # 2 for prefix path /api
+            - StripPrefix=1
+        - id: drool_service
+          uri: http://localhost:8099/drool
+          predicates:
+            - Path=${app.api-prefix}/drool/**
           filters:
             # 2 for prefix path /api
             - StripPrefix=1
