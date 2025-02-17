@@ -1,6 +1,5 @@
 package com.tiger.apigateway.configurations;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

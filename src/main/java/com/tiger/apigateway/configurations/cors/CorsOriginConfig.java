@@ -1,13 +1,14 @@
 package com.tiger.apigateway.configurations.cors;
 
-import com.tiger.apigateway.constants.AppConstants;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.tiger.apigateway.constants.AppConstants;
 
 @Configuration
 public class CorsOriginConfig {
@@ -18,7 +19,9 @@ public class CorsOriginConfig {
 
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200")); // setAllowCredentials: true, support allow Credentials, Cookie, need to set allow http://localhost:4200
+        corsConfiguration.setAllowedOrigins(List.of(
+                "http://localhost:4200")); // setAllowCredentials: true, support allow Credentials, Cookie, need to set
+        // allow http://localhost:4200
 
         // exposed header for read
         corsConfiguration.setExposedHeaders(List.of(AppConstants.APP_CONTENT_DISPOSITION, AppConstants.APP_REQUEST_ID));
